@@ -1,0 +1,54 @@
+
+name: B2B SaaS CI/CD
+
+on:
+  push:
+    branches: [ main, stage, dev ]
+  pull_request:
+    branches: [ main, stage, dev ]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    env:
+      AWS_REGION: us-east-1
+      ECR_REPOSITORY: b2bsaas-backend
+      CLUSTER_NAME: b2bsaas-cluster
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+
+    - name: Build Backend Docker Image
+      working-directory: ./backend
+      run: |
+        docker build -t $ECR_REPOSITORY:${{ github.sha }} .
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v2
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ env.AWS_REGION }}
+
+    - name: Login to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v1
+
+    - name: Tag and Push Image to ECR
+      run: |
+        docker tag $ECR_REPOSITORY:${{ github.sha }} ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ github.sha }}
+        docker push ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ github.sha }}
+
+    - name: Set up kubectl
+      uses: azure/setup-kubectl@v3
+
+    - name: Deploy via Helm
+      run: |
+        helm upgrade --install booking-app ./infra/helm/booking-app           --set image.repository=${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}           --set image.tag=${{ github.sha }}           --namespace default
