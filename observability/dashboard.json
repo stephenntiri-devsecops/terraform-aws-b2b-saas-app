@@ -1,0 +1,24 @@
+
+{
+  "title": "B2B SaaS Backend Dashboard",
+  "panels": [
+    {
+      "type": "graph",
+      "title": "Request Rate",
+      "targets": [
+        {
+          "expr": "rate(http_requests_total[1m])"
+        }
+      ]
+    },
+    {
+      "type": "graph",
+      "title": "Error Rate",
+      "targets": [
+        {
+          "expr": "rate(http_requests_total{status="500"}[1m])"
+        }
+      ]
+    }
+  ]
+}

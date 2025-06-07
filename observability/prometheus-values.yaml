@@ -1,0 +1,11 @@
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+            - alertmanager:9093
+
+scrape_configs:
+  - job_name: 'b2bsaas-backend'
+    static_configs:
+      - targets: ['b2bsaas-backend.default.svc.cluster.local:8080']

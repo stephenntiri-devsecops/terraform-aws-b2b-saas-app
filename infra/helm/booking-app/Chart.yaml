@@ -1,0 +1,6 @@
+
+apiVersion: v2
+name: booking-app
+description: Helm chart for B2B SaaS App
+version: 0.1.0
+appVersion: "1.0"

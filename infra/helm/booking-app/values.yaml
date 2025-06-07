@@ -1,0 +1,11 @@
+
+replicaCount: 2
+
+image:
+  repository: myregistry/b2bsaas-backend
+  tag: latest
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 8080
