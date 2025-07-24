@@ -29,7 +29,7 @@ jobs:
 
       - name: Build Docker image
         working-directory: ./backend
-        run: docker build -t devsecops/b2bsaas:v1 .
+        run: docker build -t dockeraws1/b2bsaas:v1 .
 
       - name: Push Docker image
-        run: docker push devsecops/b2bsaas:v1
+        run: docker push dockeraws1/b2bsaas:v1
