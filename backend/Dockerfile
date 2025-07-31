@@ -1,7 +1,15 @@
-FROM node:18-alpine
+FROM node:18-alpine AS build
 WORKDIR /app
 COPY package*.json ./
-RUN npm install
+RUN npm ci
 COPY . .
+ENV NODE_ENV=production
+RUN npm run build
+
+FROM node:18-alpine
+WORKDIR /app
+COPY --from=build /app .
+RUN adduser -D appuser
+USER appuser
 EXPOSE 8080
-CMD ["npm", "start"]
+CMD ["node", "index.js"]
