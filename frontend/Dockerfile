@@ -3,7 +3,7 @@ FROM node:18-alpine AS builder
 WORKDIR /app
 
 # Install dependencies first (leveraging layer cache)
-COPY package*.json ./
+COPY package.json package-lock.json ./
 RUN npm ci
 
 # Copy source code and run build
